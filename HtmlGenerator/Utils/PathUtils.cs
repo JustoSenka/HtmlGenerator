@@ -21,7 +21,7 @@ namespace HtmlGenerator.Utils
             }
             else
             {
-                Console.WriteLine("Unable to make relative pa.th from: " + fullAbsolutePath +
+                Console.WriteLine("Unable to make relative path from: " + fullAbsolutePath +
                     " where current environment path is: " + currentDirectory);
             }
 

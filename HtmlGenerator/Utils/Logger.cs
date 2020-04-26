@@ -1,5 +1,4 @@
-﻿using HtmlGenerator.Utils;
-using HtmlGenerator.Logging;
+﻿using HtmlGenerator.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,6 +17,13 @@ namespace HtmlGenerator
 
     namespace Logging
     {
+        public interface ILogger
+        {
+            void LogError(string message);
+            void LogWarning(string message);
+            void LogMessage(string message);
+        }
+
         public class LoggerToConsole : ILogger
         {
             public IList<Log> LogList = new List<Log>();

@@ -99,5 +99,56 @@ SomeRandomTextInNewLine</h1>
 
             Assert.AreEqual(k_TestResult_3, page.RenderedHtml, "Html differ");
         }
+
+        public const string k_SurroundBodyPage_4 = @"<body>
+    <surround-content/>
+</body>";
+
+        public const string k_SurroundDivPage_4 = @"<div>
+    <include class=""TestPage.html""/>
+    <surround-content/>
+</div>";
+
+        public const string k_IncludePage_4 = @"<button>
+    <include class=""TestPage.html""/>
+</button>";
+
+        public const string k_TestPage_4 = "<h1>title</h1>";
+
+        public const string k_MainPage_4 = @"
+<surround-begin class=""SurroundBody.html""/>
+    <include class=""IncludePage.html""/>
+    <surround-begin class=""SurroundDiv.html""/>
+        <h2>subtitle</h2>
+    <surround-end class=""SurroundDiv.html""/>
+<surround-end class=""SurroundBody.html""/>";
+
+        public const string k_TestResult_4 = @"
+<body>
+    
+    <button>
+    <h1>title</h1>
+</button>
+    <div>
+    <h1>title</h1>
+    
+        <h2>subtitle</h2>
+    
+</div>
+
+</body>";
+
+
+        [Test]
+        public void MixOfSurround_AndInclude_MultipleTimes_ProduceCorrectResult()
+        {
+            new HtmlPage("SurroundBody.html", PageGenerator, TagCollector, k_SurroundBodyPage_4);
+            new HtmlPage("SurroundDiv.html", PageGenerator, TagCollector, k_SurroundDivPage_4);
+            new HtmlPage("IncludePage.html", PageGenerator, TagCollector, k_IncludePage_4);
+            new HtmlPage("TestPage.html", PageGenerator, TagCollector, k_TestPage_4);
+            var page = new HtmlPage("MainPage.html", PageGenerator, TagCollector, k_MainPage_4);
+
+            Assert.AreEqual(k_TestResult_4, page.RenderedHtml, "Html differ");
+        }
     }
 }
