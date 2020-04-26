@@ -8,8 +8,8 @@ namespace HtmlGenerator.Tags
 {
     public class SurroundTag : ITag
     {
-        protected readonly Regex k_SurroundBeginTag = new Regex(@"<surround-begin class=""(.*)""/>");
-        protected readonly Regex k_SurroundEndTag = new Regex(@"<surround-end class=""(.*)""/>");
+        protected readonly Regex k_SurroundBeginTag = new Regex(@"<surround-begin class=""(.*)""/>", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        protected readonly Regex k_SurroundEndTag = new Regex(@"<surround-end class=""(.*)""/>", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         protected readonly string k_RenderSectionTag = @"<surround-content/>";
 
         public string TagID => "Surround";

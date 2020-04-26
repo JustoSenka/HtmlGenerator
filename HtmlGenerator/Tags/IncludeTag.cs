@@ -9,7 +9,7 @@ namespace HtmlGenerator.Tags
     {
         public string TagID => "Include";
 
-        private readonly Regex k_IncludeClassTag = new Regex(@"<include class=""(.*)""/>");
+        private readonly Regex k_IncludeClassTag = new Regex(@"<include class=""(.*)""/>", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         public string Modify(PageGenerator PageGenerator, string html)
         {
             var includeTags = k_IncludeClassTag.Matches(html);
