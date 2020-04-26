@@ -1,8 +1,7 @@
-﻿using HtmlGenerator.Utils;
+﻿using HtmlGenerator.Tags;
+using HtmlGenerator.Utils;
 using System;
 using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace HtmlGenerator.Generator
 {
@@ -19,26 +18,23 @@ namespace HtmlGenerator.Generator
         protected string m_RenderedHtml;
         public string RenderedHtml => string.IsNullOrEmpty(m_RenderedHtml) ? m_RenderedHtml = Render() : m_RenderedHtml;
 
-        // ----
-
-        protected readonly Regex k_IncludeClassTag = new Regex(@"<include class=""(.*)""/>");
-        protected readonly Regex k_SurroundBeginTag = new Regex(@"<surround class=""(.*)"">");
-        protected readonly Regex k_SurroundEndTag = new Regex(@"</surround>");
-        protected readonly Regex k_RenderSectionTag = new Regex(@"<rendersection/>");
-
         private readonly PageGenerator PageGenerator;
-
-        public HtmlPage(string path, PageGenerator PageGenerator)
+        private readonly TagCollector TagCollector;
+        public HtmlPage(string path, PageGenerator PageGenerator, TagCollector TagCollector, string overrideHtml = "")
         {
             this.Path = PathUtils.NormalizePath(path);
             this.PageGenerator = PageGenerator;
+            this.TagCollector = TagCollector;
 
             PageGenerator.Pages[this.Path] = this;
+
+            if (!string.IsNullOrEmpty(overrideHtml))
+                OverrideHtml(overrideHtml);
         }
 
         public virtual void OverrideHtml(string html)
         {
-            Html = html;
+            Html = html.FixLineEndings();
             IsHtmlOverriden = true;
         }
 
@@ -49,13 +45,15 @@ namespace HtmlGenerator.Generator
 
             if (string.IsNullOrEmpty(Html))
             {
-                Console.WriteLine($"[ERROR] {Html}: does not contain any HTML or failed to read.");
+                Logger.LogError($"{Html}: does not contain any HTML or failed to read.");
                 return "";
             }
 
             var newHtml = Html;
-            newHtml = HandleInclude(newHtml);
-            return m_RenderedHtml = newHtml;
+            foreach(var tag in TagCollector.IterateTagsConstantOrder())
+                newHtml = tag.Modify(PageGenerator, newHtml);
+
+            return m_RenderedHtml = newHtml.FixLineEndings();
         }
 
         public virtual void RenderToFile()
@@ -64,32 +62,15 @@ namespace HtmlGenerator.Generator
             File.WriteAllText(DestinationHtmlPath, Render());
         }
 
-        private string HandleInclude(string newHtml)
-        {
-            var includeTags = k_IncludeClassTag.Matches(newHtml);
-            foreach (Match tag in includeTags.OrderByDescending(t => t.Index))
-            {
-                var pageID = tag.Groups[1].Value.NormalizePath();
-
-                var replacement = PageGenerator.Pages.ContainsKey(pageID) ?
-                    PageGenerator.Pages[pageID].RenderedHtml :
-                    $"\n<!-- Error. Class not found: {pageID}. Cannot Perform Include -->";
-
-                newHtml = newHtml.Remove(tag.Index, tag.Length).Insert(tag.Index, replacement).Normalize();
-            }
-
-            return newHtml;
-        }
-
         private void TryReadHtmlFromFile()
         {
             try
             {
-                Html = File.ReadAllText(SourceHtmlPath);
+                Html = File.ReadAllText(SourceHtmlPath).FixLineEndings();
             }
             catch (Exception e)
             {
-                Console.WriteLine($"[ERROR] {SourceHtmlPath}: failed to read file: {e.Message}");
+                Logger.LogError($"{SourceHtmlPath}: failed to read file: {e.Message}");
             }
         }
     }

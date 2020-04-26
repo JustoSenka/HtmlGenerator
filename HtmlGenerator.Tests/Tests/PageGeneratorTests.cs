@@ -1,4 +1,5 @@
 using HtmlGenerator.Generator;
+using HtmlGenerator.Tags;
 using NUnit.Framework;
 using System.IO;
 
@@ -16,29 +17,32 @@ namespace Tests
 </body>";
 
         private PageGenerator PageGenerator;
+        private TagCollector TagCollector;
 
         [SetUp]
         [TearDown]
         public void CleanUp()
         {
-            PageGenerator = new PageGenerator();
+            TagCollector = new TagCollector();
+            PageGenerator = new PageGenerator(TagCollector);
+
             if (Directory.Exists(PageGenerator.DestinationFolder))
                 Directory.Delete(PageGenerator.DestinationFolder, true);
         }
 
         [TestCase(true)]
         [TestCase(false)]
-        public void IncludeSimpleText_Works(bool useFileSystem)
+        public void PageGenerator_CreatesFilesInCorrectLocations(bool useFileSystem)
         {
             if (!useFileSystem)
             {
-                new HtmlPage("IncludePage.html", PageGenerator);
-                new HtmlPage("TestPage.html", PageGenerator);
+                new HtmlPage("IncludePage.html", PageGenerator, TagCollector);
+                new HtmlPage("TestPage.html", PageGenerator, TagCollector);
             }
             else
                 PageGenerator.ScanFilesForHtml();
 
-            PageGenerator.Build();
+            PageGenerator.RenderToFile();
 
             var p1Actual = File.ReadAllText(PageGenerator.Pages["IncludePage.html"].DestinationHtmlPath);
             var p2Actual = File.ReadAllText(PageGenerator.Pages["TestPage.html"].DestinationHtmlPath);
@@ -51,7 +55,7 @@ namespace Tests
         public void DirectoriesAreCreated_ForDeepHtmlFiles()
         {
             var path = "folderA/folderB/IncludePage.html";
-            var page = new HtmlPage(path, PageGenerator);
+            var page = new HtmlPage(path, PageGenerator, TagCollector);
             page.RenderToFile();
 
             FileAssert.Exists(page.DestinationHtmlPath);

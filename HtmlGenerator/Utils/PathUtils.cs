@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace HtmlGenerator.Utils
 {
@@ -29,8 +30,12 @@ namespace HtmlGenerator.Utils
 
         public static string NormalizePath(this string path)
         {
-            return path.Trim('\n', '\r', ' ', '\\', '/').
-                Replace('\\', '/');
+            return path.Trim('\n', '\r', ' ', '\\', '/').FixLineEndings();
+        }
+
+        public static string FixLineEndings(this string str)
+        {
+            return Regex.Replace(str, @"\r\n|\n\r|\n|\r", Environment.NewLine);
         }
     }
 }
