@@ -13,6 +13,7 @@ namespace HtmlGenerator.Generator
 
         public string SourceFolder { get; set; } = "Resources";
         public string DestinationFolder { get; set; } = "Publish";
+        public string LibrariesFolder { get; set; } = "wwwroot";
 
         private readonly TagCollector TagCollector;
         public PageGenerator(TagCollector TagCollector)
@@ -29,13 +30,26 @@ namespace HtmlGenerator.Generator
                 .ToDictionary<string, string, HtmlPage>(p => p, p => new HtmlPage(p, this, TagCollector), new PathEqualityComparer());
         }
 
-        public virtual void RenderToFile()
+        public void CleanBuild()
+        {
+            Directory.Delete(DestinationFolder, true);
+        }
+
+        public virtual void BuildWebpage()
+        {
+            if (Directory.Exists(LibrariesFolder))
+                PathUtils.CopyDirectory(LibrariesFolder, DestinationFolder);
+
+            RenderToFile();
+        }
+
+        public void RenderToFile()
         {
             foreach (var (path, page) in Pages)
                 page.RenderToFile();
         }
 
-        public virtual void Render()
+        public void Render()
         {
             foreach (var (path, page) in Pages)
                 page.Render();

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "HtmlGenerator": {
+      "commandName": "Project",
+      "commandLineArgs": "--clean --sourcePath=Resources2 --destinationPath=NewDestination -b"
+    }
+  }
+}

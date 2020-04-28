@@ -37,5 +37,29 @@ namespace HtmlGenerator.Utils
         {
             return Regex.Replace(str, @"\r\n|\n\r|\n|\r", Environment.NewLine);
         }
+
+        public static void CopyDirectory(string sourceDirectory, string targetDirectory)
+        {
+            DirectoryInfo diSource = new DirectoryInfo(sourceDirectory);
+            DirectoryInfo diTarget = new DirectoryInfo(targetDirectory);
+
+            CopyDirectory(diSource, diTarget);
+        }
+
+        public static void CopyDirectory(DirectoryInfo source, DirectoryInfo target)
+        {
+            Directory.CreateDirectory(target.FullName);
+
+            // Copy each file into the new directory.
+            foreach (var fi in source.GetFiles())
+                fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
+
+            // Copy each subdirectory using recursion.
+            foreach (var diSourceSubDir in source.GetDirectories())
+            {
+                var nextTargetSubDir = target.CreateSubdirectory(diSourceSubDir.Name);
+                CopyDirectory(diSourceSubDir, nextTargetSubDir);
+            }
+        }
     }
 }
