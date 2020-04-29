@@ -26,6 +26,9 @@ namespace Tests
             TagCollector = new TagCollector();
             PageGenerator = new PageGenerator(TagCollector);
 
+            PageGenerator.SourceFolder = "Resources";
+            PageGenerator.DestinationFolder = "Publish";
+
             if (Directory.Exists(PageGenerator.DestinationFolder))
                 Directory.Delete(PageGenerator.DestinationFolder, true);
         }

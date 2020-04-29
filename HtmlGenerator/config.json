@@ -1,6 +1,5 @@
 {
-  "sourcePath": "Resources",
-  "destinationPath": "Publish",
-  "librariesFolder": "wwwroot",
-  "b" : true,
+  "sourcePath": "C:\\PersonalWebsite\\Resources",
+  "destinationPath": "C:\\PersonalWebsite\\Publish",
+  "librariesPath": "C:\\PersonalWebsite\\wwwroot"
 }

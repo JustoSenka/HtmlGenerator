@@ -11,9 +11,9 @@ namespace HtmlGenerator.Generator
     {
         public virtual IDictionary<string, HtmlPage> Pages { get; protected set; }
 
-        public string SourceFolder { get; set; } = "Resources";
-        public string DestinationFolder { get; set; } = "Publish";
-        public string LibrariesFolder { get; set; } = "wwwroot";
+        public string SourceFolder { get; set; }
+        public string DestinationFolder { get; set; }
+        public string LibrariesFolder { get; set; }
 
         private readonly TagCollector TagCollector;
         public PageGenerator(TagCollector TagCollector)
@@ -28,17 +28,34 @@ namespace HtmlGenerator.Generator
                 .Select(PathUtils.GetRelativePath)
                 .Select(p => p.Replace(SourceFolder, "", StringComparison.InvariantCultureIgnoreCase).NormalizePath())
                 .ToDictionary<string, string, HtmlPage>(p => p, p => new HtmlPage(p, this, TagCollector), new PathEqualityComparer());
+
+            Logger.LogMessage($"{Pages.Count} HTML Source files found in: {SourceFolder}");
         }
 
         public void CleanBuild()
         {
-            Directory.Delete(DestinationFolder, true);
+            if (Directory.Exists(DestinationFolder))
+            {
+                Directory.Delete(DestinationFolder, true);
+                Logger.LogMessage($"Successfully deleted: {DestinationFolder}");
+            }
         }
 
         public virtual void BuildWebpage()
         {
             if (Directory.Exists(LibrariesFolder))
+            {
                 PathUtils.CopyDirectory(LibrariesFolder, DestinationFolder);
+                Logger.LogMessage($"Successfully copied contents from {LibrariesFolder} to {DestinationFolder}");
+            }
+            else if (string.IsNullOrEmpty(LibrariesFolder))
+            {
+                Logger.LogMessage($"Skipping libraries since path is not provided:");
+            }
+            else
+            {
+                Logger.LogError($"Libraries directory not found: {LibrariesFolder}");
+            }
 
             RenderToFile();
         }

@@ -45,12 +45,12 @@ namespace HtmlGenerator.Generator
 
             if (string.IsNullOrEmpty(Html))
             {
-                Logger.LogError($"{Html}: does not contain any HTML or failed to read.");
+                Logger.LogError($"{Html}: does not contain any HTML or failed to read file.");
                 return "";
             }
 
             var newHtml = Html;
-            foreach(var tag in TagCollector.IterateTagsConstantOrder())
+            foreach (var tag in TagCollector.IterateTagsConstantOrder())
                 newHtml = tag.Modify(PageGenerator, newHtml);
 
             return m_RenderedHtml = newHtml.FixLineEndings();
@@ -60,6 +60,8 @@ namespace HtmlGenerator.Generator
         {
             Directory.CreateDirectory(new FileInfo(DestinationHtmlPath).DirectoryName);
             File.WriteAllText(DestinationHtmlPath, Render());
+
+            Logger.LogMessage($"Successfully created: {DestinationHtmlPath}");
         }
 
         private void TryReadHtmlFromFile()

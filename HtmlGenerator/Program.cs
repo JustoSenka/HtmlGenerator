@@ -2,7 +2,9 @@
 using HtmlGenerator.Tags;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace HtmlGenerator
 {
@@ -10,6 +12,7 @@ namespace HtmlGenerator
     {
         private const string k_ConfigFile = "config.json";
 
+        private const string k_EnvironmentPath = "currentDirectory";
         private const string k_SourcePathArg = "sourcePath";
         private const string k_DestinationPathArg = "destinationPath";
         private const string k_LibrariesPathArg = "librariesPath";
@@ -21,6 +24,10 @@ namespace HtmlGenerator
         static void Main(string[] args)
         {
             var root = BuildConfiguration(args);
+
+            var env = root.GetSection(k_EnvironmentPath).Value;
+            if (!string.IsNullOrEmpty(env))
+                Environment.CurrentDirectory = env;
 
             var source = root.GetSection(k_SourcePathArg).Value;
             var destination = root.GetSection(k_DestinationPathArg).Value;
@@ -39,17 +46,23 @@ namespace HtmlGenerator
 
             var gen = new PageGenerator(new TagCollector());
 
-            if (string.IsNullOrEmpty(source))
+            if (!string.IsNullOrEmpty(source))
+            {
                 gen.SourceFolder = source;
+                Environment.CurrentDirectory = source;
+            }
 
-            if (string.IsNullOrEmpty(destination))
+            if (!string.IsNullOrEmpty(destination))
                 gen.DestinationFolder = destination;
 
-            if (string.IsNullOrEmpty(libraries))
+            if (!string.IsNullOrEmpty(libraries))
                 gen.LibrariesFolder = libraries;
 
             if (clean && build)
                 rebuild = true;
+
+            if (rebuild || build) 
+                gen.ScanFilesForHtml();
 
             if (rebuild)
             {
@@ -64,12 +77,17 @@ namespace HtmlGenerator
             {
                 gen.CleanBuild();
             }
+            else
+            {
+                Console.WriteLine("\nMissing command line arguments or config:");
+                PrintHelpMessage();
+            }
         }
 
         private static bool GetSectionFromLongOrShortVersion(IConfiguration root, string arg)
         {
             var value = string.IsNullOrEmpty(root.GetSection(arg).Value) ? root.GetSection(arg[0] + "").Value : root.GetSection(arg).Value;
-            return value.Equals("True", StringComparison.InvariantCultureIgnoreCase);
+            return "True".Equals(value, StringComparison.InvariantCultureIgnoreCase);
         }
 
         private static IConfiguration BuildConfiguration(string[] args)
@@ -81,23 +99,45 @@ namespace HtmlGenerator
 
             builder.AddCommandLine(args);
 
+            var argsDictionary = new Dictionary<string, string>
+            {
+                { "-" + k_CleanArg[0], true + "" },
+                { "-" + k_RebuildArg[0], true + "" },
+                { "-" + k_BuildArg[0], true + ""},
+                { "-" + k_HelpArg[0], true + ""},
+                { "-" + k_CleanArg, true + ""},
+                { "-" + k_RebuildArg, true + ""},
+                { "-" + k_BuildArg, true + ""},
+                { "-" + k_HelpArg, true + ""},
+            }.Where(pair => args.Contains(pair.Key))
+            .Select(pair => KeyValuePair.Create(pair.Key.Trim('-'), pair.Value));
+
+            builder.AddInMemoryCollection(argsDictionary);
             return builder.Build();
         }
+
 
         private static void PrintHelpMessage()
         {
             Console.WriteLine(k_HelpMessage);
         }
 
+        private const string k_Tabs1 = "\t";
+        private const string k_Tabs2 = "\t\t";
+        private const string k_Tabs3 = "\t\t\t";
         private static readonly string k_HelpMessage = $@"
---{k_SourcePathArg}=<path> \\t\\t\\t Source path with HTML files which need to be built.
---{k_DestinationPathArg}=<path> \\t\\t\\t Destination path where all built HTML are placed
---{k_LibrariesPathArg}=<path> \\t\\t\\t Libraries folder path where libs, css, js files can be stored. Will be copied to destination path after build.
+Help screen with command line arguments for Html Generator:
 
--c, -{k_CleanArg} \\t\\t\\t Clean destination directory
--r, -{k_RebuildArg} \\t\\t\\t Rebuild website and copy libraries
--b, -{k_BuildArg} \\t\\t\\t Build complete website, will not copy libraries if present
--h, -{k_HelpArg} \\t\\t\\t Show this help screen
+--{k_EnvironmentPath}=<path> {k_Tabs2} Current directory or environment path. By default environment path will be set to be the same as destination.
+--{k_SourcePathArg}=<path> {k_Tabs2} Source path with HTML files which need to be built.
+--{k_DestinationPathArg}=<path> {k_Tabs1} Destination path where all built HTML are placed
+--{k_LibrariesPathArg}=<path> {k_Tabs2} Libraries folder path where libs, css, js files can be stored. Will be copied to destination path after build.
+
+-c, -{k_CleanArg} {k_Tabs3} Clean destination directory
+-r, -{k_RebuildArg} {k_Tabs3} Rebuild website and copy libraries
+-b, -{k_BuildArg} {k_Tabs3} Build complete website, will not copy libraries if present
+-h, -{k_HelpArg} {k_Tabs3} Show this help screen
 ";
+
     }
 }
