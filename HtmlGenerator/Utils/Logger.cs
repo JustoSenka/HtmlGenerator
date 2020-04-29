@@ -10,6 +10,8 @@ namespace HtmlGenerator
     {
         public static ILogger UsedLogger = new LoggerToFile();
 
+        public static IList<Log> LogList => UsedLogger.LogList;
+
         public static void LogError(string message) => UsedLogger.LogError(message);
         public static void LogWarning(string message) => UsedLogger.LogWarning(message);
         public static void LogMessage(string message) => UsedLogger.LogMessage(message);
@@ -19,6 +21,8 @@ namespace HtmlGenerator
     {
         public interface ILogger
         {
+            IList<Log> LogList { get; }
+
             void LogError(string message);
             void LogWarning(string message);
             void LogMessage(string message);
@@ -26,11 +30,11 @@ namespace HtmlGenerator
 
         public class LoggerToConsole : ILogger
         {
-            public IList<Log> LogList = new List<Log>();
+            public IList<Log> LogList { get; } = new List<Log>();
 
             protected virtual void Log(LogType logType, string msg)
             {
-                var log = new Log(LogType.Message, msg);
+                var log = new Log(logType, msg);
 
                 var str = "[" + log.LogType + "] " + log.Message;
                 Console.WriteLine(str);
@@ -47,15 +51,18 @@ namespace HtmlGenerator
         public class LoggerToFile : LoggerToConsole, ILogger
         {
             private const string LogPath = "Log.txt";
+            private readonly string LogPathFull;
 
             public LoggerToFile()
             {
-                if (File.Exists(LogPath))
-                    File.Delete(LogPath);
+                LogPathFull = Path.Combine(Environment.CurrentDirectory, LogPath);
+
+                if (File.Exists(LogPathFull))
+                    File.Delete(LogPathFull);
 
                 try
                 {
-                    File.Create(LogPath);
+                    File.Create(LogPathFull).Close();
                 }
                 catch (IOException) { LogError("Logger cannot create file"); }
             }
@@ -69,9 +76,12 @@ namespace HtmlGenerator
 
                 try
                 {
-                    File.AppendAllLines(LogPath, new[] { str });
+                    File.AppendAllLines(LogPathFull, new[] { str });
                 }
-                catch (IOException) { }
+                catch (IOException e)
+                {
+                    Console.WriteLine("Logger failed to append file: " + e.Message);
+                }
             }
         }
 

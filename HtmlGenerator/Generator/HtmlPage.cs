@@ -51,17 +51,33 @@ namespace HtmlGenerator.Generator
 
             var newHtml = Html;
             foreach (var tag in TagCollector.IterateTagsConstantOrder())
-                newHtml = tag.Modify(PageGenerator, newHtml);
+            {
+                try
+                {
+                    newHtml = tag.Modify(PageGenerator, newHtml);
+                }
+                catch
+                {
+                    Logger.LogError($"Application crashed while parsing '{tag.TagID}' tag in {SourceHtmlPath} or its dependants.");
+                }
+            }
 
             return m_RenderedHtml = newHtml.FixLineEndings();
         }
 
         public virtual void RenderToFile()
         {
-            Directory.CreateDirectory(new FileInfo(DestinationHtmlPath).DirectoryName);
-            File.WriteAllText(DestinationHtmlPath, Render());
+            try
+            {
+                Directory.CreateDirectory(new FileInfo(DestinationHtmlPath).DirectoryName);
+                File.WriteAllText(DestinationHtmlPath, Render());
 
-            Logger.LogMessage($"Successfully created: {DestinationHtmlPath}");
+                Logger.LogMessage($"Successfully created: {DestinationHtmlPath}");
+            }
+            catch (Exception e)
+            {
+                Logger.LogMessage($"Failed to output HTML to file '{DestinationHtmlPath}': {e.Message}");
+            }
         }
 
         private void TryReadHtmlFromFile()

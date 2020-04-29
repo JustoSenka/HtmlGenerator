@@ -24,12 +24,19 @@ namespace HtmlGenerator.Generator
 
         public virtual void ScanFilesForHtml()
         {
-            Pages = Directory.GetFileSystemEntries(SourceFolder, "*.html", SearchOption.AllDirectories)
-                .Select(PathUtils.GetRelativePath)
-                .Select(p => p.Replace(SourceFolder, "", StringComparison.InvariantCultureIgnoreCase).NormalizePath())
-                .ToDictionary<string, string, HtmlPage>(p => p, p => new HtmlPage(p, this, TagCollector), new PathEqualityComparer());
+            try
+            {
+                Pages = Directory.GetFileSystemEntries(SourceFolder, "*.html", SearchOption.AllDirectories)
+                    .Select(PathUtils.GetRelativePath)
+                    .Select(p => p.Replace(SourceFolder, "", StringComparison.InvariantCultureIgnoreCase).NormalizePath())
+                    .ToDictionary<string, string, HtmlPage>(p => p, p => new HtmlPage(p, this, TagCollector), new PathEqualityComparer());
 
-            Logger.LogMessage($"{Pages.Count} HTML Source files found in: {SourceFolder}");
+                Logger.LogMessage($"{Pages.Count} HTML Source files found in: {SourceFolder}");
+            }
+            catch (DirectoryNotFoundException e)
+            {
+                Logger.LogError($"Could not scan directory '{SourceFolder}' for HTML files: {e.Message}");
+            }
         }
 
         public void CleanBuild()
@@ -46,7 +53,7 @@ namespace HtmlGenerator.Generator
             if (Directory.Exists(LibrariesFolder))
             {
                 PathUtils.CopyDirectory(LibrariesFolder, DestinationFolder);
-                Logger.LogMessage($"Successfully copied contents from {LibrariesFolder} to {DestinationFolder}");
+                Logger.LogMessage($"Successfully copied contents from '{LibrariesFolder}' to '{DestinationFolder}'");
             }
             else if (string.IsNullOrEmpty(LibrariesFolder))
             {
@@ -54,7 +61,7 @@ namespace HtmlGenerator.Generator
             }
             else
             {
-                Logger.LogError($"Libraries directory not found: {LibrariesFolder}");
+                Logger.LogWarning($"Libraries directory not found: {LibrariesFolder}");
             }
 
             RenderToFile();

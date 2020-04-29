@@ -1,4 +1,5 @@
 ﻿using HtmlGenerator.Generator;
+using HtmlGenerator.Logging;
 using HtmlGenerator.Tags;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -23,6 +24,8 @@ namespace HtmlGenerator
 
         static void Main(string[] args)
         {
+            Logger.LogMessage($"Page Generator started with args: {string.Join(", ", args)}");
+
             var root = BuildConfiguration(args);
 
             var env = root.GetSection(k_EnvironmentPath).Value;
@@ -49,7 +52,14 @@ namespace HtmlGenerator
             if (!string.IsNullOrEmpty(source))
             {
                 gen.SourceFolder = source;
-                Environment.CurrentDirectory = source;
+                try
+                {
+                    Environment.CurrentDirectory = source;
+                }
+                catch
+                {
+                    Logger.LogError($"Source directory not found: {source}");
+                }
             }
 
             if (!string.IsNullOrEmpty(destination))
@@ -61,7 +71,7 @@ namespace HtmlGenerator
             if (clean && build)
                 rebuild = true;
 
-            if (rebuild || build) 
+            if (rebuild || build)
                 gen.ScanFilesForHtml();
 
             if (rebuild)
@@ -81,7 +91,22 @@ namespace HtmlGenerator
             {
                 Console.WriteLine("\nMissing command line arguments or config:");
                 PrintHelpMessage();
+                return;
             }
+
+            Console.WriteLine();
+            var errorCount = Logger.LogList.Count(log => log.LogType == LogType.Error);
+            var warningCount = Logger.LogList.Count(log => log.LogType == LogType.Warning);
+
+            if (errorCount == 0 && warningCount == 0)
+                Logger.LogMessage("[Success] Build finished without any error(s)");
+            else if (errorCount != 0 && warningCount == 0)
+                Logger.LogMessage($"[Failure] Build finished with {errorCount} error(s)");
+            else if (errorCount == 0 && warningCount != 0)
+                Logger.LogMessage($"[Success] Build finished but with {warningCount} warning(s)");
+            else
+                Logger.LogMessage($"[Failure] Build finished with {errorCount} error(s) and {warningCount} warning(s)");
+
         }
 
         private static bool GetSectionFromLongOrShortVersion(IConfiguration root, string arg)
@@ -128,7 +153,7 @@ namespace HtmlGenerator
         private static readonly string k_HelpMessage = $@"
 Help screen with command line arguments for Html Generator:
 
---{k_EnvironmentPath}=<path> {k_Tabs2} Current directory or environment path. By default environment path will be set to be the same as destination.
+--{k_EnvironmentPath}=<path> {k_Tabs2} Current directory or environment path. By default environment path will be set to be the same as Source Path.
 --{k_SourcePathArg}=<path> {k_Tabs2} Source path with HTML files which need to be built.
 --{k_DestinationPathArg}=<path> {k_Tabs1} Destination path where all built HTML are placed
 --{k_LibrariesPathArg}=<path> {k_Tabs2} Libraries folder path where libs, css, js files can be stored. Will be copied to destination path after build.
