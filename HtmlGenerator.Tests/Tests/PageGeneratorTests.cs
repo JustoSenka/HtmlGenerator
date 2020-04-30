@@ -46,5 +46,19 @@ namespace Tests
 
             FileAssert.Exists(page.DestinationHtmlPath);
         }
+
+        [Test]
+        public void PageGenerator_WithIgnoredFiles_IncludesCorrectlyButDoesntCopyIgnoredFileToDestination()
+        {
+            var p1 = PageGenerator.NewPage("Include.html", "<include class=\"_IgnoredInclude.html\"/>");
+            var p2 = PageGenerator.NewPage("_IgnoredInclude.html", k_TestPage_1);
+
+            PageGenerator.RenderToFile();
+
+            FileAssert.Exists(p1.DestinationHtmlPath);
+            FileAssert.DoesNotExist(p2.DestinationHtmlPath);
+
+            Assert.AreEqual(k_TestPage_1, p1.RenderedHtml, "Html differ");
+        }
     }
 }

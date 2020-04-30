@@ -70,7 +70,10 @@ namespace HtmlGenerator.Generator
         public void RenderToFile()
         {
             foreach (var (path, page) in Pages)
-                page.RenderToFile();
+            {
+                if (!path.StartsWith("_"))
+                    page.RenderToFile();
+            }
         }
 
         public void Render()
