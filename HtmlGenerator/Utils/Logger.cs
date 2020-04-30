@@ -8,7 +8,21 @@ namespace HtmlGenerator
 {
     public static class Logger
     {
-        public static ILogger UsedLogger = new LoggerToFile();
+        private static ILogger m_UsedLogger;
+        public static ILogger UsedLogger
+        {
+            get
+            {
+                if (m_UsedLogger == null)
+                    m_UsedLogger = new LoggerToFile();
+
+                return m_UsedLogger;
+            }
+            set
+            {
+                m_UsedLogger = value;
+            }
+        }
 
         public static IList<Log> LogList => UsedLogger.LogList;
 

@@ -5,7 +5,7 @@ using System.IO;
 
 namespace Tests
 {
-    public class PageGeneratorTests
+    public class PageGeneratorTests : BaseTest
     {
         public const string k_TestPage_1 = "<h1>title</h1>";
         public const string k_IncludePage_1 = @"<body>
@@ -15,23 +15,6 @@ namespace Tests
         public const string k_TestResult_1 = @"<body>
     <h1>title</h1>
 </body>";
-
-        private PageGenerator PageGenerator;
-        private TagCollector TagCollector;
-
-        [SetUp]
-        [TearDown]
-        public void CleanUp()
-        {
-            TagCollector = new TagCollector();
-            PageGenerator = new PageGenerator(TagCollector);
-
-            PageGenerator.SourceFolder = "Resources";
-            PageGenerator.DestinationFolder = "Publish";
-
-            if (Directory.Exists(PageGenerator.DestinationFolder))
-                Directory.Delete(PageGenerator.DestinationFolder, true);
-        }
 
         [TestCase(true)]
         [TestCase(false)]

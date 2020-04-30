@@ -9,7 +9,7 @@ namespace HtmlGenerator.Tags
     {
         public string TagID => "Include";
 
-        private readonly Regex k_IncludeClassTag = new Regex(@"<include class=""(.*)""/>", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        private readonly Regex k_IncludeClassTag = new Regex(@"<include class=""(.*)""/+>", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         public string Modify(PageGenerator PageGenerator, string html)
         {
             var includeTags = k_IncludeClassTag.Matches(html);
@@ -17,15 +17,14 @@ namespace HtmlGenerator.Tags
             {
                 var pageID = tag.Groups[1].Value.NormalizePath();
 
-                if (PageGenerator.Pages.ContainsKey(pageID))
-                {
-                    var replacement = PageGenerator.Pages[pageID].RenderedHtml;
-                    html = html.Replace(tag.Index, tag.Length, replacement);
-                }
-                else
+                if (!PageGenerator.Pages.ContainsKey(pageID))
                 {
                     Logger.LogError($"Class not found: {pageID}. Cannot Perform Include");
+                    continue;
                 }
+
+                var replacement = PageGenerator.Pages[pageID].RenderedHtml;
+                html = html.Replace(tag.Index, tag.Length, replacement);
             }
 
             return html.FixLineEndings();

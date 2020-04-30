@@ -56,9 +56,9 @@ namespace HtmlGenerator.Generator
                 {
                     newHtml = tag.Modify(PageGenerator, newHtml);
                 }
-                catch
+                catch (Exception e)
                 {
-                    Logger.LogError($"Application crashed while parsing '{tag.TagID}' tag in {SourceHtmlPath} or its dependants.");
+                    Logger.LogError($"Application crashed while parsing '{tag.TagID}' tag in {SourceHtmlPath} or its dependants. {e.Message}");
                 }
             }
 
