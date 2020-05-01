@@ -7,17 +7,17 @@ namespace HtmlGenerator.Utils
     {
         public override int Compare(string x, string y)
         {
-            return x.ToLower().CompareTo(y.ToLower());
+            return x.NormalizePath().ToLower().CompareTo(y.NormalizePath().ToLower());
         }
 
         public override bool Equals(string x, string y)
         {
-            return x.ToLower() == y.ToLower();
+            return x.NormalizePath().ToLower() == y.NormalizePath().ToLower();
         }
 
         public override int GetHashCode(string obj)
         {
-            return obj.ToLower().GetHashCode();
+            return obj.NormalizePath().ToLower().GetHashCode();
         }
     }
 }

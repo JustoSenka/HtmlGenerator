@@ -5,12 +5,12 @@ using System.Text.RegularExpressions;
 
 namespace HtmlGenerator.Tags
 {
-    public class IncludeTag : ITag
+    public class IncludeTag : BaseTag, ITag
     {
-        public string TagID => "Include";
+        public override string TagID => "Include";
 
-        private readonly Regex k_IncludeClassTag = new Regex(@"<include class=""(.*)""/+>", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-        public string Modify(PageGenerator PageGenerator, string html)
+        private readonly Regex k_IncludeClassTag = new Regex(@"<include class=""(.*)""[ ]?/?>", PreferredRegexOptions);
+        public override string Modify(PageGenerator PageGenerator, string html)
         {
             var includeTags = k_IncludeClassTag.Matches(html);
             foreach (var tag in includeTags.OrderByDescending(t => t.Index))

@@ -40,6 +40,12 @@ anything
 <surround-end class=""SurroundContent.html""/>
 ";
 
+        public const string k_CorrectSurroundPage_SpaceChangesAndMissingSlash_2 = @"
+<surround-begin class=""SurroundContent.html"" >
+anything
+<surround-end class=""SurroundContent.html"" />
+";
+
         public const string k_IncorrectSurroundPage_2 = @"
 <surround-begin class=""SurroundContent.html""/>
 anything
@@ -64,9 +70,10 @@ anything
 </body>
 ";
         [TestCase(1, k_CorrectSurroundPage_2, k_CorrectSurroundContentPage_2, 0, "")]
-        [TestCase(2, k_CorrectSurroundPage_2, k_IncorrectSurroundContentPage_2, 2, ".*SurroundContent.html.*surround-content")]
-        [TestCase(3, k_IncorrectSurroundPage_2, k_CorrectSurroundContentPage_2, 1, "surround-begin count.* 1.*surround-end count.* 0")]
-        [TestCase(4, k_IncorrectSurroundPageMissingClass_2, k_CorrectSurroundContentPage_2, 1, "Class not found.*SurroundContentMissing.html")]
+        [TestCase(2, k_CorrectSurroundPage_SpaceChangesAndMissingSlash_2, k_CorrectSurroundContentPage_2, 0, "")]
+        [TestCase(3, k_CorrectSurroundPage_2, k_IncorrectSurroundContentPage_2, 2, ".*SurroundContent.html.*surround-content")]
+        [TestCase(4, k_IncorrectSurroundPage_2, k_CorrectSurroundContentPage_2, 1, "surround-begin count.* 1.*surround-end count.* 0")]
+        [TestCase(5, k_IncorrectSurroundPageMissingClass_2, k_CorrectSurroundContentPage_2, 1, "Class not found.*SurroundContentMissing.html")]
         // id is used to easily distinguish different tests in test runner, since it becomes part of test name
         public void MissingSurrounContent_ReportsError(int id, string surroundPage, string contentPage, int errorCount, string errorRegex)
         {

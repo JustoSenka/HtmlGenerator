@@ -30,7 +30,7 @@ namespace HtmlGenerator.Utils
 
         public static string NormalizePath(this string path)
         {
-            return path.Trim('\n', '\r', ' ', '\\', '/').FixLineEndings();
+            return path.Replace("\\", "/").Trim('\n', '\r', ' ', '\\', '/').FixLineEndings();
         }
 
         public static string FixLineEndings(this string str)

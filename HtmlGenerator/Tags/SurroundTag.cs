@@ -6,18 +6,18 @@ using System.Text.RegularExpressions;
 
 namespace HtmlGenerator.Tags
 {
-    public class SurroundTag : ITag
+    public class SurroundTag : BaseTag, ITag
     {
-        protected readonly Regex k_SurroundBeginTag = new Regex(@"<surround-begin class=""(.*)""/+>", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-        protected readonly Regex k_SurroundEndTag = new Regex(@"<surround-end class=""(.*)""/+>", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-        protected const string k_RenderSectionTag = @"<surround-content/>";
-
-        public string TagID => "Surround";
+        protected readonly Regex k_SurroundBeginTag = new Regex(@"<surround-begin class=""(.*)""[ ]?/?>", PreferredRegexOptions);
+        protected readonly Regex k_SurroundEndTag = new Regex(@"<surround-end class=""(.*)""[ ]?/?>", PreferredRegexOptions);
+        protected const string k_RenderSectionTag = @"<surround-content[ ]?/?>";
+        
+        public override string TagID => "Surround";
 
         private const string ClassNotFoundError = "Class not found: {0}. Cannot Perform Surround";
         private const string SurroundNotFoundError = "Tried to surround html with '{0}' but couldn't find '" + k_RenderSectionTag + "' tag inside it.";
 
-        public string Modify(PageGenerator PageGenerator, string html)
+        public override string Modify(PageGenerator PageGenerator, string html)
         {
             var beginTags = k_SurroundBeginTag.Matches(html).OrderByDescending(t => t.Index);
             foreach (var tag in beginTags)
@@ -44,20 +44,21 @@ namespace HtmlGenerator.Tags
             }
 
             var replacement = PageGenerator.Pages[pageID].RenderedHtml;
-            var index = replacement.IndexOf(k_RenderSectionTag, StringComparison.InvariantCultureIgnoreCase);
-            if (index == -1)
+            var match = Regex.Match(replacement, k_RenderSectionTag, RegexOptions.IgnoreCase);
+            if (match == null || match.Captures.Count == 0 || match.Captures[0].Index == -1)
             {
                 Logger.LogError(string.Format(SurroundNotFoundError, pageID));
                 return html;
             }
 
+            var index = match.Captures[0].Index;
             if (isBeginTag)
             {
                 replacement = replacement.Substring(0, index); // insert part from beginning to content tag
             }
             else
             {
-                index = index + k_RenderSectionTag.Length; // insert part from content tag till the end
+                index = index + match.Captures[0].Length; // insert part from content tag till the end
                 replacement = replacement.Substring(index, replacement.Length - index);
             }
 

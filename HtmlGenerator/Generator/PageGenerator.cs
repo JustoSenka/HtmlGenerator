@@ -71,7 +71,7 @@ namespace HtmlGenerator.Generator
         {
             foreach (var (path, page) in Pages)
             {
-                if (!path.StartsWith("_"))
+                if (!path.StartsWith("_") && !path.Contains("/_") && !path.Contains("\\_"))
                     page.RenderToFile();
             }
         }

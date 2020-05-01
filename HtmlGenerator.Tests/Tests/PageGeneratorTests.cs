@@ -47,16 +47,36 @@ namespace Tests
             FileAssert.Exists(page.DestinationHtmlPath);
         }
 
-        [Test]
-        public void PageGenerator_WithIgnoredFiles_IncludesCorrectlyButDoesntCopyIgnoredFileToDestination()
+        [TestCase("_IgnoredInclude.html")]
+        [TestCase("Directory/_IgnoredInclude.html")]
+        [TestCase("_Directory/IgnoredInclude.html")]
+        [TestCase("SomeOtherDir/_Directory/IgnoredInclude.html")]
+        public void PageGenerator_WithIgnoredFiles_IncludesCorrectlyButDoesntCopyIgnoredFileToDestination(string ignoredFilePath)
         {
-            var p1 = PageGenerator.NewPage("Include.html", "<include class=\"_IgnoredInclude.html\"/>");
-            var p2 = PageGenerator.NewPage("_IgnoredInclude.html", k_TestPage_1);
+            var p1 = PageGenerator.NewPage("Include.html", $"<include class=\"{ignoredFilePath}\"/>");
+            var p2 = PageGenerator.NewPage(ignoredFilePath, k_TestPage_1);
 
             PageGenerator.RenderToFile();
 
             FileAssert.Exists(p1.DestinationHtmlPath);
             FileAssert.DoesNotExist(p2.DestinationHtmlPath);
+
+            Assert.AreEqual(k_TestPage_1, p1.RenderedHtml, "Html differ");
+        }
+
+        [TestCase("Directory/Include.html", "Directory/Include.html")]
+        [TestCase("Directory/Include.html", "Directory\\Include.html")]
+        [TestCase("Directory\\Include.html", "Directory/Include.HTML")]
+        [TestCase("Directory\\INCLUDE.html", "Directory\\Include.html")]
+        public void PageGenerator_WithPathsInDirectories_WithInconsistentDirSeparators_WorkFine(string pageID, string howItsReferencedPath)
+        {
+            var p1 = PageGenerator.NewPage("Main.html", $"<include class=\"{howItsReferencedPath}\"/>");
+            var p2 = PageGenerator.NewPage(pageID, k_TestPage_1);
+
+            PageGenerator.RenderToFile();
+
+            FileAssert.Exists(p1.DestinationHtmlPath);
+            FileAssert.Exists(p2.DestinationHtmlPath);
 
             Assert.AreEqual(k_TestPage_1, p1.RenderedHtml, "Html differ");
         }

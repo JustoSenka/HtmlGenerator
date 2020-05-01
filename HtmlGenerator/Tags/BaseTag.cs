@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using HtmlGenerator.Generator;
 
 namespace HtmlGenerator.Tags
 {
     public abstract class BaseTag : ITag
     {
-        public string TagID => throw new NotImplementedException();
+        protected const RegexOptions PreferredRegexOptions = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant;
 
+        public abstract string TagID { get; }
         public abstract string Modify(PageGenerator PageGenerator, string html);
     }
 
