@@ -1,4 +1,5 @@
-﻿using HtmlGenerator.Tags;
+﻿using HtmlGenerator.Logging;
+using HtmlGenerator.Tags;
 using HtmlGenerator.Utils;
 using System;
 using System.Collections.Generic;
@@ -85,6 +86,24 @@ namespace HtmlGenerator.Generator
         public HtmlPage NewPage(string path, string overrideHtml = "")
         {
             return new HtmlPage(path, this, TagCollector, overrideHtml);
+        }
+
+        public void ReportErrors()
+        {
+            Console.WriteLine();
+            var errorCount = Logger.LogList.Count(log => log.LogType == LogType.Error);
+            var warningCount = Logger.LogList.Count(log => log.LogType == LogType.Warning);
+
+            if (errorCount == 0 && warningCount == 0)
+                Logger.LogMessage("[Success] Build finished without any error(s)");
+            else if (errorCount != 0 && warningCount == 0)
+                Logger.LogMessage($"[Failure] Build finished with {errorCount} error(s)");
+            else if (errorCount == 0 && warningCount != 0)
+                Logger.LogMessage($"[Success] Build finished but with {warningCount} warning(s)");
+            else
+                Logger.LogMessage($"[Failure] Build finished with {errorCount} error(s) and {warningCount} warning(s)");
+
+            Logger.LogList.Clear();
         }
     }
 }
