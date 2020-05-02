@@ -54,7 +54,7 @@ namespace HtmlGenerator.Generator
             {
                 try
                 {
-                    newHtml = tag.Modify(PageGenerator, newHtml);
+                    newHtml = tag.Modify(PageGenerator, Path, newHtml);
                 }
                 catch (Exception e)
                 {

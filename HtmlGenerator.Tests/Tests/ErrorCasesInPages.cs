@@ -11,17 +11,6 @@ namespace Tests
 {
     public class ErrorCasesInPages : BaseTest
     {
-        private static void CheckErrorCount(int count)
-        {
-            Assert.AreEqual(count, Logger.LogList.Count(log => log.LogType == LogType.Error), $"{count} errors should be reported");
-        }
-
-        private static void CheckFirstErrorRegex(string errorMsg)
-        {
-            Assert.IsTrue(Regex.IsMatch(Logger.LogList.First(log => log.LogType == LogType.Error).Message, errorMsg,
-                RegexOptions.CultureInvariant | RegexOptions.IgnoreCase), "Regex did not match error");
-        }
-
         public const string k_IncludePage_1 = @"<include class=""TestPage.html""/>";
 
         [Test]

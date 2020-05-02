@@ -7,10 +7,11 @@ namespace HtmlGenerator.Tags
 {
     public class IncludeTag : BaseTag, ITag
     {
-        public override string TagID => "Include";
+        public const string k_TagID = "Include";
+        public string TagID => k_TagID;
 
-        private readonly Regex k_IncludeClassTag = new Regex(@"<include class=""(.*)""[ ]?/?>", PreferredRegexOptions);
-        public override string Modify(PageGenerator PageGenerator, string html)
+        private readonly Regex k_IncludeClassTag = new Regex(RegexForTagAndClass(k_TagID), PreferredRegexOptions);
+        public string Modify(PageGenerator PageGenerator, string mainPageID, string html)
         {
             var includeTags = k_IncludeClassTag.Matches(html);
             foreach (var tag in includeTags.OrderByDescending(t => t.Index))
@@ -19,7 +20,7 @@ namespace HtmlGenerator.Tags
 
                 if (!PageGenerator.Pages.ContainsKey(pageID))
                 {
-                    Logger.LogError($"Class not found: {pageID}. Cannot Perform Include");
+                    Logger.LogError($"'{mainPageID}': Class not found: {pageID}. Cannot Perform Include");
                     continue;
                 }
 

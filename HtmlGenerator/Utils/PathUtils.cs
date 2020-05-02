@@ -28,9 +28,11 @@ namespace HtmlGenerator.Utils
             return "";
         }
 
+        public static string TrimNewLinesAndDirSeparators(this string path) => path.Trim('\n', '\r', ' ', '\\', '/');
+
         public static string NormalizePath(this string path)
         {
-            return path.Replace("\\", "/").Trim('\n', '\r', ' ', '\\', '/').FixLineEndings();
+            return path.Replace("\\", "/").TrimNewLinesAndDirSeparators().FixLineEndings();
         }
 
         public static string FixLineEndings(this string str)

@@ -1,15 +1,12 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using HtmlGenerator.Generator;
+﻿using System.Text.RegularExpressions;
 
 namespace HtmlGenerator.Tags
 {
-    public abstract class BaseTag : ITag
+    public abstract class BaseTag
     {
         protected const RegexOptions PreferredRegexOptions = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant;
-
-        public abstract string TagID { get; }
-        public abstract string Modify(PageGenerator PageGenerator, string html);
+        protected static string RegexForTagAndClass(string tagID) => $@"<{tagID} {RegexClassCalpture}>";
+        protected const string RegexClassCalpture = @"class=""(.*)""[ ]?/?";
     }
 
     public static class TagExtensions
