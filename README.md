@@ -113,6 +113,10 @@ Example config file:
 }
 ```
 
+### (Pro tip) Interactive Mode
+
+Start tool in interactive mode to see realtime changes to the website. Files are rebuild whenever anything changes in the source directory. So just save your Html file, go to browser and refresh, files should be updated with instant feedback.
+
 ## Command Line Arguments
 
 HtmlGenerator.dll Supports these command line arguments
