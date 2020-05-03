@@ -15,7 +15,7 @@ namespace Tests
 </p>";
 
         public const string k_PageCode = @"
-<template class=""MyTemplate.html"">
+<template src=""MyTemplate.html"">
     <@description>
         Some multiline 
         description here
@@ -47,12 +47,12 @@ namespace Tests
 @var @varA
 @var2
 <strong>@var2</strong>
-<button class=""@var-dash"">@var.dot</button>
+<button src=""@var-dash"">@var.dot</button>
 <@var/> <@var>SomeText@varA</@var>
 ";
 
         public const string k_PageCode_2 = @"
-<template class=""MyTemplate.html"">
+<template src=""MyTemplate.html"">
     <@var>var</@var>
     <@var2>var2</@var2>
     <@varA>varA</@varA>
@@ -65,7 +65,7 @@ namespace Tests
 var varA
 var2
 <strong>var2</strong>
-<button class=""var-dash"">var.dot</button>
+<button src=""var-dash"">var.dot</button>
 <var/> <var>SomeTextvarA</var>
 ";
 
@@ -81,7 +81,7 @@ var2
         public const string k_TemlpateCode_3 = @"@var - @varA;";
 
         public const string k_PageCode_3 = @"
-<template class=""MyTemplate.html"">
+<template src=""MyTemplate.html"">
     <@var><a href=""~/some/path.html"">Link</a></@var>
     <@varA><a href=""..\some\path.html"">Link</a></@varA>
 </template>";
@@ -101,11 +101,11 @@ var2
         public const string k_CorrectTemplate = @"@var - @varA;";
 
         public const string k_PageCode_4_NoVars = @"
-<template class=""MyTemplate.html"">
+<template src=""MyTemplate.html"">
 </template>";
 
         public const string k_PageCode_4_TooManyVars = @"
-<template class=""MyTemplate.html"">
+<template src=""MyTemplate.html"">
 <@var>var</@var>
 <@varA>varA</@varA>
 <@varB>varB</@varB>

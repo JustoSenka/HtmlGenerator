@@ -11,7 +11,7 @@ namespace Tests
 {
     public class ErrorCasesInPages : BaseTest
     {
-        public const string k_IncludePage_1 = @"<include class=""TestPage.html""/>";
+        public const string k_IncludePage_1 = @"<include src=""TestPage.html""/>";
 
         [Test]
         public void MissingInclude_ReportsError()
@@ -24,27 +24,27 @@ namespace Tests
         }
 
         public const string k_CorrectSurroundPage_2 = @"
-<surround-begin class=""SurroundContent.html""/>
+<surround-begin src=""SurroundContent.html""/>
 anything
-<surround-end class=""SurroundContent.html""/>
+<surround-end src=""SurroundContent.html""/>
 ";
 
         public const string k_CorrectSurroundPage_SpaceChangesAndMissingSlash_2 = @"
-<surround-begin class=""SurroundContent.html"" >
+<surround-begin src=""SurroundContent.html"" >
 anything
-<surround-end class=""SurroundContent.html"" />
+<surround-end src=""SurroundContent.html"" />
 ";
 
         public const string k_IncorrectSurroundPage_2 = @"
-<surround-begin class=""SurroundContent.html""/>
+<surround-begin src=""SurroundContent.html""/>
 anything
-<surround-enedededd class=""SurroundContent.html""/>
+<surround-enedededd src=""SurroundContent.html""/>
 ";
 
         public const string k_IncorrectSurroundPageMissingClass_2 = @"
-<surround-begin class=""SurroundContentMissing.html""/>
+<surround-begin src=""SurroundContentMissing.html""/>
 anything
-<surround-end class=""SurroundContent.html""/>
+<surround-end src=""SurroundContent.html""/>
 ";
 
         public const string k_CorrectSurroundContentPage_2 = @"

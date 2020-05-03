@@ -9,7 +9,7 @@ namespace Tests
     {
         public const string k_TestPage_1 = "<h1>title</h1>";
         public const string k_IncludePage_1 = @"<body>
-    <include class=""TestPage.html""/>
+    <include src=""TestPage.html""/>
 </body>";
 
         public const string k_TestResult_1 = @"<body>
@@ -27,11 +27,11 @@ namespace Tests
 
         public const string k_TestPage_2 = "<h1>title{0}</h1>";
         public const string k_IncludePage_2 = @"<body>
-    <include class=""TestPage0.html""/>
-    <include class=""TestPage1.html""/>
+    <include src=""TestPage0.html""/>
+    <include src=""TestPage1.html""/>
     <dic>
-        <include class=""TestPage2.html""/>
-        <include class=""TestPage3.html""/>
+        <include src=""TestPage2.html""/>
+        <include src=""TestPage3.html""/>
     </div>
 </body>";
 
@@ -60,9 +60,9 @@ SomeRandomTextInNewLine</h1>
         }
 
         public const string k_TestPage_3 = @"
-<surround-begin class=""Surround.html""/>
+<surround-begin src=""Surround.html""/>
     <h1>title</h1>
-<surround-end class=""Surround.html""/>";
+<surround-end src=""Surround.html""/>";
 
         public const string k_SurroundPage_3 = @"<body>
     <surround-content/>
@@ -90,23 +90,23 @@ SomeRandomTextInNewLine</h1>
 </body>";
 
         public const string k_SurroundDivPage_4 = @"<div>
-    <include class=""TestPage.html""/>
+    <include src=""TestPage.html""/>
     <surround-content/>
 </div>";
 
         public const string k_IncludePage_4 = @"<button>
-    <include class=""TestPage.html""/>
+    <include src=""TestPage.html""/>
 </button>";
 
         public const string k_TestPage_4 = "<h1>title</h1>";
 
         public const string k_MainPage_4 = @"
-<surround-begin class=""SurroundBody.html""/>
-    <include class=""IncludePage.html""/>
-    <surround-begin class=""SurroundDiv.html""/>
+<surround-begin src=""SurroundBody.html""/>
+    <include src=""IncludePage.html""/>
+    <surround-begin src=""SurroundDiv.html""/>
         <h2>subtitle</h2>
-    <surround-end class=""SurroundDiv.html""/>
-<surround-end class=""SurroundBody.html""/>";
+    <surround-end src=""SurroundDiv.html""/>
+<surround-end src=""SurroundBody.html""/>";
 
         public const string k_TestResult_4 = @"
 <body>

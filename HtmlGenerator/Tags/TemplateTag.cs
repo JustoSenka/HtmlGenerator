@@ -10,7 +10,7 @@ namespace HtmlGenerator.Tags
         public const string k_TagID = "Template";
         public string TagID => k_TagID;
 
-        private readonly Regex k_TemplateClassTag = new Regex(@"<template class=""(.*)"">([\w\W\n]*?)</template>", PreferredRegexOptions);
+        private readonly Regex k_TemplateClassTag = new Regex(@"<template src=""(.*)"">([\w\W\n]*?)</template>", PreferredRegexOptions);
         private readonly Regex k_TemplateArgumants = new Regex(@"<(@[\w\-\.]+)>([\w\W\n]*?)</[ ]?\1>", PreferredRegexOptions);
         private readonly Regex k_TemplateVariables = new Regex(@"(@[\w\-\.]+)" + k_MatchVariableEnd, PreferredRegexOptions);
         private const string k_MatchVariableEnd = @"(?=[^\w\-\.])"; // Matches end of arg name so when replacing @arg, should not match part of @argB 

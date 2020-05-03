@@ -9,7 +9,7 @@ namespace Tests
     {
         public const string k_TestPage_1 = "<h1>title</h1>";
         public const string k_IncludePage_1 = @"<body>
-    <include class=""TestPage.html""/>
+    <include src=""TestPage.html""/>
 </body>";
 
         public const string k_TestResult_1 = @"<body>
@@ -53,7 +53,7 @@ namespace Tests
         [TestCase("SomeOtherDir/_Directory/IgnoredInclude.html")]
         public void PageGenerator_WithIgnoredFiles_IncludesCorrectlyButDoesntCopyIgnoredFileToDestination(string ignoredFilePath)
         {
-            var p1 = PageGenerator.NewPage("Include.html", $"<include class=\"{ignoredFilePath}\"/>");
+            var p1 = PageGenerator.NewPage("Include.html", $"<include src=\"{ignoredFilePath}\"/>");
             var p2 = PageGenerator.NewPage(ignoredFilePath, k_TestPage_1);
 
             PageGenerator.RenderToFile();
@@ -70,7 +70,7 @@ namespace Tests
         [TestCase("Directory\\INCLUDE.html", "Directory\\Include.html")]
         public void PageGenerator_WithPathsInDirectories_WithInconsistentDirSeparators_WorkFine(string pageID, string howItsReferencedPath)
         {
-            var p1 = PageGenerator.NewPage("Main.html", $"<include class=\"{howItsReferencedPath}\"/>");
+            var p1 = PageGenerator.NewPage("Main.html", $"<include src=\"{howItsReferencedPath}\"/>");
             var p2 = PageGenerator.NewPage(pageID, k_TestPage_1);
 
             PageGenerator.RenderToFile();

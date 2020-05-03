@@ -6,7 +6,7 @@ namespace HtmlGenerator.Tags
     {
         protected const RegexOptions PreferredRegexOptions = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant;
         protected static string RegexForTagAndClass(string tagID) => $@"<{tagID} {RegexClassCalpture}>";
-        protected const string RegexClassCalpture = @"class=""(.*)""[ ]?/?";
+        protected const string RegexClassCalpture = @"src=""(.*)""[ ]?/?";
     }
 
     public static class TagExtensions
