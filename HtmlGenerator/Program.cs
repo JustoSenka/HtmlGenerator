@@ -1,5 +1,4 @@
 ﻿using HtmlGenerator.Generator;
-using HtmlGenerator.Logging;
 using HtmlGenerator.Tags;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -26,6 +25,7 @@ namespace HtmlGenerator
         static void Main(string[] args)
         {
             Logger.LogMessage($"Page Generator started with args: {string.Join(", ", args)}");
+            Logger.LogMessage($"Starting in: {Environment.CurrentDirectory}");
 
             var root = BuildConfiguration(args);
 
@@ -49,27 +49,49 @@ namespace HtmlGenerator
                 return;
             }
 
-            var gen = new PageGenerator(new TagCollector());
-
-            if (!string.IsNullOrEmpty(source))
+            // Convert to absolute paths, since environment dir will be changed later
+            var gen = new PageGenerator(new TagCollector())
             {
-                gen.SourceFolder = source;
-                try
-                {
-                    Environment.CurrentDirectory = source;
-                }
-                catch
-                {
-                    Logger.LogError($"Source directory not found: {source}");
-                }
+                SourceFolder = string.IsNullOrEmpty(source) ? "" : Path.GetFullPath(source),
+                DestinationFolder = string.IsNullOrEmpty(destination) ? "" : Path.GetFullPath(destination),
+                LibrariesFolder = string.IsNullOrEmpty(libraries) ? "" : Path.GetFullPath(libraries)
+            };
+
+            // Print current paths for easier debugging
+            Console.WriteLine();
+            Logger.LogMessage($"Source directory set to: {source} ('{gen.SourceFolder}')");
+            Logger.LogMessage($"Destination directory set to: {destination} ('{gen.DestinationFolder}')");
+            Logger.LogMessage($"Libraries directory set to: {libraries} ('{gen.LibrariesFolder}')");
+
+
+            if (!Directory.Exists(gen.DestinationFolder))
+            {
+                Logger.LogError($"Destination directory not found: {gen.DestinationFolder}");
+                gen.ReportErrors();
+                return;
             }
 
-            if (!string.IsNullOrEmpty(destination))
-                gen.DestinationFolder = destination;
+            // Change environment current directory
+            try
+            {
+                Environment.CurrentDirectory = gen.SourceFolder;
+                Logger.LogMessage($"Current directory changed to: {Environment.CurrentDirectory}");
+            }
+            catch
+            {
+                Logger.LogError($"Source directory not found: {gen.SourceFolder}");
+                gen.ReportErrors();
+                return;
+            }
 
-            if (!string.IsNullOrEmpty(libraries))
-                gen.LibrariesFolder = libraries;
+            Console.WriteLine();
+            RunGenerator(gen, interactive, clean, rebuild, build);
 
+            gen.ReportErrors();
+        }
+
+        private static void RunGenerator(PageGenerator gen, bool interactive, bool clean, bool rebuild, bool build)
+        {
             if (clean && build)
                 rebuild = true;
 
@@ -101,7 +123,7 @@ namespace HtmlGenerator
                 return;
             }
 
-            gen.ReportErrors();
+            return;
         }
 
         private static bool GetSectionFromLongOrShortVersion(IConfiguration root, string arg)
@@ -114,8 +136,14 @@ namespace HtmlGenerator
         {
             var builder = new ConfigurationBuilder();
 
-            if (File.Exists(k_ConfigFile))
-                builder.AddJsonFile(k_ConfigFile);
+            var configFilePath = Path.GetFullPath(k_ConfigFile);
+            if (File.Exists(configFilePath))
+            {
+                builder.AddJsonFile(configFilePath);
+                Logger.LogMessage("Successfully read config from: " + configFilePath);
+            }
+            else
+                Logger.LogMessage("No configuration file found: " + configFilePath);
 
             builder.AddCommandLine(args);
 
