@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 
 namespace HtmlGenerator.Generator
 {
@@ -14,7 +15,7 @@ namespace HtmlGenerator.Generator
             this.PageGenerator = PageGenerator;
         }
 
-        public void Run(string path)
+        public void Run(params string[] paths)
         {
             PageGenerator.ScanFilesForHtml();
             PageGenerator.BuildWebpage();
@@ -22,12 +23,14 @@ namespace HtmlGenerator.Generator
             Changed += OnChanged;
             FileChanged += OnFileChanged;
 
-            using (FileSystemWatcher watcher = CreateWatcher(path))
-            {
-                Logger.LogMessage("Starting interactive continious build.");
-                Logger.LogMessage("Press 'q' to quit.");
-                while (Console.ReadKey().KeyChar != 'q') ;
-            }
+            var watchers = paths.Select(p => CreateWatcher(p)).ToArray();
+
+            Logger.LogMessage("Starting interactive continious build.");
+            Logger.LogMessage("Press 'q' to quit.");
+            while (Console.ReadKey().KeyChar != 'q') ;
+
+            foreach (var w in watchers)
+                w.Dispose();
         }
 
         private void OnFileChanged(string obj)
@@ -53,7 +56,7 @@ namespace HtmlGenerator.Generator
             var watcher = new FileSystemWatcher();
             watcher.Path = path;
             watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName;
-            watcher.Filter = "*.html";
+            watcher.Filter = "*";
             watcher.IncludeSubdirectories = true;
 
             watcher.Changed += OnChangedInternal;
@@ -68,15 +71,29 @@ namespace HtmlGenerator.Generator
         private void OnChangedInternal(object source, FileSystemEventArgs e)
         {
             // Ignoring temp files from apps like visual studio
-            if (e.FullPath.EndsWith(".html", StringComparison.InvariantCultureIgnoreCase))
+            if (!ShouldIgnoreFile(e.FullPath))
                 FileChanged?.Invoke(e.FullPath);
         }
 
         private void OnRenamedInternal(object source, RenamedEventArgs e)
         {
             // Ignoring temp files from apps like visual studio
-            if (e.FullPath.EndsWith(".html", StringComparison.InvariantCultureIgnoreCase))
+            if (!ShouldIgnoreFile(e.FullPath))
                 Changed.Invoke();
+        }
+
+        /// <summary>
+        /// Ignores temporary or hidden files
+        /// </summary>
+        private bool ShouldIgnoreFile(string path)
+        {
+            var f = new FileInfo(path);
+            return f.Attributes.HasFlag(FileAttributes.Temporary) ||
+                f.Attributes.HasFlag(FileAttributes.Hidden) ||
+                path.EndsWith("~") ||
+                path.EndsWith(".TMP", StringComparison.InvariantCultureIgnoreCase) ||
+                string.IsNullOrEmpty(f.Extension) ||
+                f.Extension.Contains("~");
         }
     }
 }

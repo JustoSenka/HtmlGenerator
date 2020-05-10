@@ -100,7 +100,11 @@ namespace HtmlGenerator
 
             if (interactive)
             {
-                new Interactive(gen).Run(gen.SourceFolder);
+                if (string.IsNullOrEmpty(gen.LibrariesFolder))
+                    new Interactive(gen).Run(gen.SourceFolder);
+                else
+                    new Interactive(gen).Run(gen.SourceFolder, gen.LibrariesFolder);
+
                 return;
             }
             else if (rebuild)
