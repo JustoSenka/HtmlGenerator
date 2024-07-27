@@ -1,0 +1,50 @@
+﻿<surround-begin src="Layout/_Layout.html" />
+
+<header>
+    <h1>Page1</h1>
+    <p>
+        Paragraph
+    </p>
+</header>
+
+<include src="Includes/_InnerPage.html" />
+
+<div id="accordion-id">
+
+    <template src="Templates/_ProjectEntry.html">
+        <@title>Project Title</@title>
+        <@year>2024</@year>
+        <@main-link>https://google.com/</@main-link>
+        <@subtitle>
+            Subtitle
+        </@subtitle>
+        <@links></@links>
+        <@description>
+            Description
+            <br>
+            More description
+        </@description>
+        <@lang>HTML</@lang>
+        <@tags>Tag, Web, Page</@tags>
+    </template>
+
+    <template src="Templates/_ProjectEntry.html">
+        <@title>Project Title</@title>
+        <@year>2024</@year>
+        <@main-link>https://google.com/</@main-link>
+        <@subtitle>
+            Subtitle
+        </@subtitle>
+        <@links></@links>
+        <@description>
+            Description
+            <br>
+            More description
+        </@description>
+        <@lang>HTML</@lang>
+        <@tags>Tag, Web, Page</@tags>
+    </template>
+
+</div>
+
+<surround-end src="Layout/_Layout.html" />

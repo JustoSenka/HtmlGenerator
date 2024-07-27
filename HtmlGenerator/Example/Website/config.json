@@ -1,0 +1,5 @@
+{
+  "sourcePath": "Resources",
+  "destinationPath": "Publish",
+  "librariesPath": "wwwroot"
+}
