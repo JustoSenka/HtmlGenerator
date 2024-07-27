@@ -40,7 +40,7 @@ namespace Tests
             new HtmlPage("MyTemplate.html", PageGenerator, TagCollector, k_TemlpateCode);
             var page = new HtmlPage("MainPage.html", PageGenerator, TagCollector, k_PageCode);
 
-            Assert.AreEqual(k_ExpectedCode, page.RenderedHtml, "Html differ");
+            Assert.That(k_ExpectedCode == page.RenderedHtml, "Html differ");
         }
 
         public const string k_TemlpateCode_2 = @"
@@ -75,7 +75,7 @@ var2
             new HtmlPage("MyTemplate.html", PageGenerator, TagCollector, k_TemlpateCode_2);
             var page = new HtmlPage("MainPage.html", PageGenerator, TagCollector, k_PageCode_2);
 
-            Assert.AreEqual(k_ExpectedCode_2, page.RenderedHtml, "Html differ");
+            Assert.That(k_ExpectedCode_2 == page.RenderedHtml, "Html differ");
         }
 
         public const string k_TemlpateCode_3 = @"@var - @varA;";
@@ -95,7 +95,7 @@ var2
             new HtmlPage("MyTemplate.html", PageGenerator, TagCollector, k_TemlpateCode_3);
             var page = new HtmlPage("MainPage.html", PageGenerator, TagCollector, k_PageCode_3);
 
-            Assert.AreEqual(k_ExpectedCode_3, page.RenderedHtml, "Html differ");
+            Assert.That(k_ExpectedCode_3 == page.RenderedHtml, "Html differ");
         }
 
         public const string k_CorrectTemplate = @"@var - @varA;";

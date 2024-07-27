@@ -32,23 +32,23 @@ namespace Tests
 
         protected static void CheckErrorCount(int count)
         {
-            Assert.AreEqual(count, Logger.LogList.Count(log => log.LogType == LogType.Error), $"{count} errors should be reported");
+            Assert.That(count == Logger.LogList.Count(log => log.LogType == LogType.Error), $"{count} errors should be reported");
         }
 
         protected static void CheckFirstErrorRegex(string errorMsg)
         {
-            Assert.IsTrue(Regex.IsMatch(Logger.LogList.First(log => log.LogType == LogType.Error).Message, errorMsg,
+            Assert.That(Regex.IsMatch(Logger.LogList.First(log => log.LogType == LogType.Error).Message, errorMsg,
                 RegexOptions.CultureInvariant | RegexOptions.IgnoreCase), "Regex did not match error");
         }
 
         protected static void CheckWarningCount(int count)
         {
-            Assert.AreEqual(count, Logger.LogList.Count(log => log.LogType == LogType.Warning), $"{count} warnings should be reported");
+            Assert.That(count == Logger.LogList.Count(log => log.LogType == LogType.Warning), $"{count} warnings should be reported");
         }
 
         protected static void CheckFirstWarningRegex(string warningMsg)
         {
-            Assert.IsTrue(Regex.IsMatch(Logger.LogList.First(log => log.LogType == LogType.Warning).Message, warningMsg,
+            Assert.That(Regex.IsMatch(Logger.LogList.First(log => log.LogType == LogType.Warning).Message, warningMsg,
                 RegexOptions.CultureInvariant | RegexOptions.IgnoreCase), "Regex did not match warning");
         }
     }

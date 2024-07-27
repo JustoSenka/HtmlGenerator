@@ -22,7 +22,7 @@ namespace Tests
             var page = new HtmlPage("IncludePage.html", PageGenerator, TagCollector, k_IncludePage_1);
             new HtmlPage("TestPage.html", PageGenerator, TagCollector, k_TestPage_1);
 
-            Assert.AreEqual(k_TestResult_1, page.RenderedHtml, "Html differ");
+            Assert.That(k_TestResult_1 == page.RenderedHtml, "Html differ");
         }
 
         public const string k_TestPage_2 = "<h1>title{0}</h1>";
@@ -56,7 +56,7 @@ SomeRandomTextInNewLine</h1>
 
             var page = new HtmlPage("IncludePage.html", PageGenerator, TagCollector, k_IncludePage_2);
 
-            Assert.AreEqual(k_TestResult_2, page.RenderedHtml, "Html are not the same");
+            Assert.That(k_TestResult_2 == page.RenderedHtml, "Html are not the same");
         }
 
         public const string k_TestPage_3 = @"
@@ -82,7 +82,7 @@ SomeRandomTextInNewLine</h1>
             new HtmlPage("Surround.html", PageGenerator, TagCollector, k_SurroundPage_3);
             var page = new HtmlPage("TestPage.html", PageGenerator, TagCollector, k_TestPage_3);
 
-            Assert.AreEqual(k_TestResult_3, page.RenderedHtml, "Html differ");
+            Assert.That(k_TestResult_3 == page.RenderedHtml, "Html differ");
         }
 
         public const string k_SurroundBodyPage_4 = @"<body>
@@ -133,7 +133,7 @@ SomeRandomTextInNewLine</h1>
             new HtmlPage("TestPage.html", PageGenerator, TagCollector, k_TestPage_4);
             var page = new HtmlPage("MainPage.html", PageGenerator, TagCollector, k_MainPage_4);
 
-            Assert.AreEqual(k_TestResult_4, page.RenderedHtml, "Html differ");
+            Assert.That(k_TestResult_4 == page.RenderedHtml, "Html differ");
         }
     }
 }

@@ -66,9 +66,8 @@ namespace HtmlGenerator
 
             if (!Directory.Exists(gen.DestinationFolder))
             {
-                Logger.LogError($"Destination directory not found: {gen.DestinationFolder}");
-                gen.ReportErrors();
-                return;
+                Directory.CreateDirectory(gen.DestinationFolder);
+                Logger.LogMessage($"Destination directory created: {gen.DestinationFolder}");
             }
 
             // Change environment current directory

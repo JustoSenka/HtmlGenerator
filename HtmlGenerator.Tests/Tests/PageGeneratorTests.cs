@@ -1,6 +1,7 @@
 using HtmlGenerator.Generator;
 using HtmlGenerator.Tags;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using System.IO;
 
 namespace Tests
@@ -33,8 +34,8 @@ namespace Tests
             var p1Actual = File.ReadAllText(PageGenerator.Pages["IncludePage.html"].DestinationHtmlPath);
             var p2Actual = File.ReadAllText(PageGenerator.Pages["TestPage.html"].DestinationHtmlPath);
 
-            Assert.AreEqual(k_TestResult_1, p1Actual, "Html differ");
-            Assert.AreEqual(k_TestPage_1, p2Actual, "Html differ");
+            Assert.That(k_TestResult_1 == p1Actual, "Html differ");
+            Assert.That(k_TestPage_1 == p2Actual, "Html differ");
         }
 
         [Test]
@@ -61,7 +62,7 @@ namespace Tests
             FileAssert.Exists(p1.DestinationHtmlPath);
             FileAssert.DoesNotExist(p2.DestinationHtmlPath);
 
-            Assert.AreEqual(k_TestPage_1, p1.RenderedHtml, "Html differ");
+            Assert.That(k_TestPage_1 == p1.RenderedHtml, "Html differ");
         }
 
         [TestCase("Directory/Include.html", "Directory/Include.html")]
@@ -78,7 +79,7 @@ namespace Tests
             FileAssert.Exists(p1.DestinationHtmlPath);
             FileAssert.Exists(p2.DestinationHtmlPath);
 
-            Assert.AreEqual(k_TestPage_1, p1.RenderedHtml, "Html differ");
+            Assert.That(k_TestPage_1 == p1.RenderedHtml, "Html differ");
         }
     }
 }

@@ -1,11 +1,5 @@
-using HtmlGenerator;
 using HtmlGenerator.Generator;
-using HtmlGenerator.Logging;
-using HtmlGenerator.Tags;
 using NUnit.Framework;
-using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace Tests
 {
