@@ -40,27 +40,73 @@ namespace HtmlGenerator.Utils
             return Regex.Replace(str, @"\r\n|\n\r|\n|\r", Environment.NewLine);
         }
 
-        public static void CopyDirectory(string sourceDirectory, string targetDirectory)
+        public static void CopyDirectory(string sourceDirectory, string targetDirectory, Func<string, bool> ignoreFileFunc = default)
         {
             var diSource = new DirectoryInfo(sourceDirectory);
             var diTarget = new DirectoryInfo(targetDirectory);
 
-            CopyDirectory(diSource, diTarget);
+            if (ignoreFileFunc == default)
+                ignoreFileFunc = _ => false;
+
+            CopyDirectory(diSource, diTarget, ignoreFileFunc);
         }
 
-        public static void CopyDirectory(DirectoryInfo source, DirectoryInfo target)
+        private static void CopyDirectory(DirectoryInfo source, DirectoryInfo target, Func<string, bool> ignoreFileFunc)
         {
-            Directory.CreateDirectory(target.FullName);
+            try
+            {
+                Directory.CreateDirectory(target.FullName);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"Cannot create directory '{target.FullName}': {e.Message}");
+                return;
+            }
 
             // Copy each file into the new directory.
-            foreach (var fi in source.GetFiles())
-                fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
+            foreach (var fileInfo in source.GetFiles())
+            {
+                if (ignoreFileFunc(fileInfo.FullName))
+                    continue;
+
+                try
+                {
+                    fileInfo.CopyTo(Path.Combine(target.FullName, fileInfo.Name), true);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError($"Cannot copy file to destination '{target.FullName}': {e.Message}");
+                }
+            }
 
             // Copy each subdirectory using recursion.
             foreach (var diSourceSubDir in source.GetDirectories())
             {
-                var nextTargetSubDir = target.CreateSubdirectory(diSourceSubDir.Name);
-                CopyDirectory(diSourceSubDir, nextTargetSubDir);
+                if (ignoreFileFunc(diSourceSubDir.Name))
+                    continue;
+
+                try
+                {
+                    var nextTargetSubDir = target.CreateSubdirectory(diSourceSubDir.Name);
+                    CopyDirectory(diSourceSubDir, nextTargetSubDir, ignoreFileFunc);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError($"Cannot create subdirectory '{Path.Combine(target.FullName, diSourceSubDir.Name)}': {e.Message}");
+                }
+            }
+
+            // Delete empty directories at target afterwards
+            if (target.GetFiles().Length == 0 && target.GetDirectories().Length == 0)
+            {
+                try
+                {
+                    target.Delete();
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError($"Cannot delete empty directory '{target.FullName}': {e.Message}");
+                }
             }
         }
     }

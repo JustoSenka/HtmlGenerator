@@ -51,6 +51,13 @@ namespace HtmlGenerator.Generator
 
         public virtual void BuildWebpage()
         {
+            CopyLibraries();
+            CopyResources();
+            RenderToFile();
+        }
+
+        private void CopyLibraries()
+        {
             if (Directory.Exists(LibrariesFolder))
             {
                 PathUtils.CopyDirectory(LibrariesFolder, DestinationFolder);
@@ -64,15 +71,21 @@ namespace HtmlGenerator.Generator
             {
                 Logger.LogWarning($"Libraries directory not found: {LibrariesFolder}");
             }
+        }
 
-            RenderToFile();
+        private void CopyResources()
+        {
+            PathUtils.CopyDirectory(SourceFolder, DestinationFolder,
+                path => IsIgnoredFile(path) || path.EndsWith(".html", StringComparison.InvariantCultureIgnoreCase));
+
+            Logger.LogMessage($"Successfully copied contents from '{SourceFolder}' to '{DestinationFolder}'");
         }
 
         public void RenderToFile()
         {
             foreach (var (path, page) in Pages)
             {
-                if (!path.StartsWith("_") && !path.Contains("/_") && !path.Contains("\\_"))
+                if (!IsIgnoredFile(path))
                     page.RenderToFile();
             }
         }
@@ -104,6 +117,11 @@ namespace HtmlGenerator.Generator
                 Logger.LogMessage($"[Failure] Build finished with {errorCount} error(s) and {warningCount} warning(s)");
 
             Logger.LogList.Clear();
+        }
+
+        private static bool IsIgnoredFile(string path)
+        {
+            return path.StartsWith("_") || path.Contains("/_") || path.Contains("\\_");
         }
     }
 }

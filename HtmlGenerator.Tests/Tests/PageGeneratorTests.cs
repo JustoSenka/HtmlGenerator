@@ -1,5 +1,4 @@
 using HtmlGenerator.Generator;
-using HtmlGenerator.Tags;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using System.IO;
@@ -36,6 +35,13 @@ namespace Tests
 
             Assert.That(k_TestResult_1 == p1Actual, "Html differ");
             Assert.That(k_TestPage_1 == p2Actual, "Html differ");
+        }
+
+        [Test]
+        public void PageGenerator_CopiesNonHtmlResourceFiles()
+        {
+            PageGenerator.BuildWebpage();
+            FileAssert.Exists(Path.Combine(PageGenerator.DestinationFolder, "image.png"));
         }
 
         [Test]
