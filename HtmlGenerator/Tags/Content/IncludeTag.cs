@@ -3,14 +3,14 @@ using HtmlGenerator.Utils;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace HtmlGenerator.Tags
+namespace HtmlGenerator.Tags.Content
 {
     public class IncludeTag : BaseTag, ITag
     {
         public const string k_TagID = "Include";
         public string TagID => k_TagID;
 
-        private readonly Regex k_IncludeClassTag = new Regex(RegexForTagAndClass(k_TagID), PreferredRegexOptions);
+        private readonly Regex k_IncludeClassTag = new(RegexForTagAndClass(k_TagID), PreferredRegexOptions);
         public string Modify(PageGenerator PageGenerator, string mainPageID, string html)
         {
             var includeTags = k_IncludeClassTag.Matches(html);

@@ -42,8 +42,8 @@ namespace HtmlGenerator.Utils
 
         public static void CopyDirectory(string sourceDirectory, string targetDirectory)
         {
-            DirectoryInfo diSource = new DirectoryInfo(sourceDirectory);
-            DirectoryInfo diTarget = new DirectoryInfo(targetDirectory);
+            var diSource = new DirectoryInfo(sourceDirectory);
+            var diTarget = new DirectoryInfo(targetDirectory);
 
             CopyDirectory(diSource, diTarget);
         }

@@ -3,16 +3,16 @@ using HtmlGenerator.Utils;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace HtmlGenerator.Tags
+namespace HtmlGenerator.Tags.Content
 {
     public class TemplateTag : BaseTag, ITag
     {
         public const string k_TagID = "Template";
         public string TagID => k_TagID;
 
-        private readonly Regex k_TemplateClassTag = new Regex(@"<template src=""(.*)"">([\w\W\n]*?)</template>", PreferredRegexOptions);
-        private readonly Regex k_TemplateArgumants = new Regex(@"<(@[\w\-\.]+)>([\w\W\n]*?)</[ ]?\1>", PreferredRegexOptions);
-        private readonly Regex k_TemplateVariables = new Regex(@"(@[\w\-\.]+)" + k_MatchVariableEnd, PreferredRegexOptions);
+        private readonly Regex k_TemplateClassTag = new(@"<template src=""(.*)"">([\w\W\n]*?)</template>", PreferredRegexOptions);
+        private readonly Regex k_TemplateArgumants = new(@"<(@[\w\-\.]+)>([\w\W\n]*?)</[ ]?\1>", PreferredRegexOptions);
+        private readonly Regex k_TemplateVariables = new(@"(@[\w\-\.]+)" + k_MatchVariableEnd, PreferredRegexOptions);
         private const string k_MatchVariableEnd = @"(?=[^\w\-\.])"; // Matches end of arg name so when replacing @arg, should not match part of @argB 
         public string Modify(PageGenerator PageGenerator, string mainPageID, string html)
         {
@@ -46,7 +46,7 @@ namespace HtmlGenerator.Tags
 
                 // Replace arguments with real values
                 foreach (var (argName, argValue) in args)
-                    templateHtml = Regex.Replace(templateHtml, argName + k_MatchVariableEnd, argValue, PreferredRegexOptions); 
+                    templateHtml = Regex.Replace(templateHtml, argName + k_MatchVariableEnd, argValue, PreferredRegexOptions);
 
                 // Replace total template code in original html with generated code
                 html = html.Replace(tag.Index, tag.Length, templateHtml);

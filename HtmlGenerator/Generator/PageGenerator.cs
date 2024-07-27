@@ -79,7 +79,7 @@ namespace HtmlGenerator.Generator
 
         public void Render()
         {
-            foreach (var (path, page) in Pages)
+            foreach (var (_, page) in Pages)
                 page.Render();
         }
 

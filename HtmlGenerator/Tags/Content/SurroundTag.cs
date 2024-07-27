@@ -3,15 +3,15 @@ using HtmlGenerator.Utils;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace HtmlGenerator.Tags
+namespace HtmlGenerator.Tags.Content
 {
     public class SurroundTag : BaseTag, ITag
     {
         public const string k_TagID = "Surround";
         public string TagID => k_TagID;
 
-        private readonly Regex k_SurroundBeginTag = new Regex(RegexForTagAndClass("surround-begin"), PreferredRegexOptions);
-        private readonly Regex k_SurroundEndTag = new Regex(RegexForTagAndClass("surround-end"), PreferredRegexOptions);
+        private readonly Regex k_SurroundBeginTag = new(RegexForTagAndClass("surround-begin"), PreferredRegexOptions);
+        private readonly Regex k_SurroundEndTag = new(RegexForTagAndClass("surround-end"), PreferredRegexOptions);
 
         protected const string k_RenderSectionTag = @"<surround-content[ ]?/?>";
 
@@ -59,7 +59,7 @@ namespace HtmlGenerator.Tags
             }
             else
             {
-                index = index + match.Captures[0].Length; // insert part from content tag till the end
+                index += match.Captures[0].Length; // insert part from content tag till the end
                 replacement = replacement.Substring(index, replacement.Length - index);
             }
 

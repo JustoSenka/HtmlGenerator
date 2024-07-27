@@ -13,9 +13,7 @@ namespace HtmlGenerator
         {
             get
             {
-                if (m_UsedLogger == null)
-                    m_UsedLogger = new LoggerToFile();
-
+                m_UsedLogger ??= new LoggerToFile();
                 return m_UsedLogger;
             }
             set
