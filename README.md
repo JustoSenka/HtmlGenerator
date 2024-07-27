@@ -5,7 +5,11 @@ Html Generator is a standalone command line tool which adds additional features 
 
 ## How to use
 
-Add additional tags into your Html, run HtmlGenerator to build the project. Altered html should be copied to destination directory.
+Add additional tags into your Html, run HtmlGenerator to build the project. Altered html will be copied to destination directory.
+
+Example website is included under Examples. Contains Template and Include functionality, has all the setup needed to run it.
+
+Download it, run `start.bat` to start the generator in interactive mode. Check Publish directory. Open `Index.html` page to inspect changes (page refresh is required). Make changes to files in `Resources`, changes will be applied immediatelly to published website.
 
 ## Features
 
